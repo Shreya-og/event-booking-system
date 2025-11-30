@@ -1,0 +1,105 @@
+### API Testing Examples
+
+## Health Check
+GET http://localhost:5000/health
+
+---
+
+## Events API
+
+### Get All Events
+GET http://localhost:5000/api/events
+
+### Get All Events with Filters
+GET http://localhost:5000/api/events?search=tech&sortBy=date&sortOrder=asc
+
+### Get Event by ID
+GET http://localhost:5000/api/events/1
+
+### Create Event
+POST http://localhost:5000/api/events
+Content-Type: application/json
+
+{
+  "title": "AI Conference 2025",
+  "description": "Leading AI experts discussing the future of artificial intelligence",
+  "location": "Silicon Valley, CA",
+  "date": "2025-09-15T09:00:00Z",
+  "totalSeats": 300,
+  "price": 399.99,
+  "image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800"
+}
+
+### Update Event
+PUT http://localhost:5000/api/events/1
+Content-Type: application/json
+
+{
+  "title": "Updated Event Title",
+  "price": 349.99,
+  "availableSeats": 100
+}
+
+### Delete Event
+DELETE http://localhost:5000/api/events/1
+
+---
+
+## Bookings API
+
+### Get All Bookings
+GET http://localhost:5000/api/bookings
+
+### Get Bookings for Specific Event
+GET http://localhost:5000/api/bookings?eventId=1
+
+### Get Booking by ID
+GET http://localhost:5000/api/bookings/1
+
+### Create Booking
+POST http://localhost:5000/api/bookings
+Content-Type: application/json
+
+{
+  "eventId": "1",
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "mobile": "+1234567890",
+  "quantity": 2
+}
+
+### Update Booking Status
+PATCH http://localhost:5000/api/bookings/1
+Content-Type: application/json
+
+{
+  "status": "cancelled"
+}
+
+---
+
+## Error Examples
+
+### Validation Error
+POST http://localhost:5000/api/events
+Content-Type: application/json
+
+{
+  "title": "",
+  "description": "Test"
+}
+
+### Not Found Error
+GET http://localhost:5000/api/events/99999
+
+### Insufficient Seats
+POST http://localhost:5000/api/bookings
+Content-Type: application/json
+
+{
+  "eventId": "1",
+  "name": "Test User",
+  "email": "test@example.com",
+  "mobile": "+1234567890",
+  "quantity": 10000
+}
