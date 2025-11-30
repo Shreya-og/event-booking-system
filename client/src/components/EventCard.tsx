@@ -14,6 +14,7 @@ interface EventCardProps {
   price: number;
   image: string;
   gradient: string;
+  onBookNow?: () => void;
 }
 
 const EventCard = ({
@@ -27,6 +28,7 @@ const EventCard = ({
   price,
   image,
   gradient,
+  onBookNow,
 }: EventCardProps) => {
   const seatPercentage = (availableSeats / totalSeats) * 100;
 
@@ -97,7 +99,7 @@ const EventCard = ({
             </div>
           </div>
 
-          <Button variant="gradient" className="w-full group/btn">
+          <Button variant="gradient" className="w-full group/btn" onClick={onBookNow}>
             Book Now
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
           </Button>

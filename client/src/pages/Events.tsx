@@ -2,13 +2,14 @@ import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import EventCard from "@/components/EventCard";
+import { BookingDialog } from "@/components/BookingDialog";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEvents } from "@/hooks/useEvents";
-import useEvent from "@/hooks/useEvent";
+import { Event } from "@/types/api";
 import eventTech from "@/assets/event-tech.jpg";
 import eventMusic from "@/assets/event-music.jpg";
 import eventBusiness from "@/assets/event-business.jpg";
@@ -17,17 +18,11 @@ const Events = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [sortBy, setSortBy] = useState("featured");
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
   
-  const isIdSearch = Boolean(searchTerm && /^\s*\d+\s*$/.test(searchTerm));
-
-  const { data: singleEvent, isLoading: isLoadingEvent, error: errorEvent } = useEvent(
-    isIdSearch ? searchTerm.trim() : undefined
-  );
-
-  const { data: events, isLoading, error } = useEvents({ 
-    // when searching by id we fetch a single event route (/events/:id)
-    // so avoid calling the list endpoint with the numeric id as a search term
-    search: isIdSearch ? undefined : searchTerm || undefined,
+  const { data: events, isLoading, error, refetch } = useEvents({ 
+    search: searchTerm || undefined,
     sortBy: sortBy === 'date' ? 'date' : sortBy === 'price-low' || sortBy === 'price-high' ? 'price' : undefined,
     sortOrder: sortBy === 'price-high' ? 'desc' : 'asc'
   });
@@ -110,21 +105,6 @@ const Events = () => {
 
   // Filter events based on location
   const filteredEvents = useMemo(() => {
-    // If searching specifically by id and we have a result, show only that
-    if (isIdSearch) {
-      if (singleEvent) {
-        const e = {
-          ...singleEvent,
-          image: singleEvent.image || eventTech,
-          gradient: 'bg-gradient-primary'
-        };
-        return [e];
-      }
-
-      // If no result returned yet, show empty array so UI can show 'no results'
-      return [];
-    }
-
     const eventsToFilter = events && events.length > 0 
       ? events.map(event => ({
           ...event,
@@ -138,7 +118,7 @@ const Events = () => {
     return eventsToFilter.filter(event => 
       event.location.toLowerCase().includes(locationFilter.toLowerCase())
     );
-  }, [events, singleEvent, locationFilter, isIdSearch]);
+  }, [events, locationFilter]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -202,12 +182,10 @@ const Events = () => {
       {/* Events Grid */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          {(error || errorEvent) && (
+          {error && (
             <div className="mb-6 p-4 bg-destructive/10 border border-destructive rounded-lg">
               <p className="text-destructive text-center">
-                {isIdSearch
-                  ? `Failed to load event with id '${searchTerm}'. Showing sample data.`
-                  : 'Failed to load events from server. Showing sample data.'}
+                Failed to load events from server. Showing sample data.
               </p>
             </div>
           )}
@@ -230,7 +208,7 @@ const Events = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(isLoading || (isIdSearch && isLoadingEvent)) ? (
+            {isLoading ? (
               <>
                 {[1, 2, 3, 4, 5, 6].map((i) => (
                   <div key={i} className="space-y-4">
@@ -241,30 +219,35 @@ const Events = () => {
                 ))}
               </>
             ) : (
-              filteredEvents.length > 0 ? (
-                filteredEvents.map((event, index) => (
+              filteredEvents.map((event, index) => (
               <motion.div
                 key={event.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <EventCard {...event} />
+                <EventCard 
+                  {...event} 
+                  onBookNow={() => {
+                    setSelectedEvent(event);
+                    setDialogOpen(true);
+                  }}
+                />
               </motion.div>
-                ))
-              ) : (
-                // no results
-                <div className="col-span-full text-center py-20">
-                  <p className="text-muted-foreground mb-4">No events found.</p>
-                  {isIdSearch && !isLoadingEvent && !singleEvent && (
-                    <p className="text-sm text-foreground/80">No event found with id "{searchTerm}".</p>
-                  )}
-                </div>
-              )
+              ))
             )}
           </div>
         </div>
       </section>
+
+      <BookingDialog
+        event={selectedEvent}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSuccess={() => {
+          refetch();
+        }}
+      />
     </div>
   );
 };
