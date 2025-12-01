@@ -1,55 +1,238 @@
-# Welcome to Smart Event Booking System Project
 
-## Project info
+---
 
-**URL**: 
+# Smart Event Booking System — Frontend
 
-## How can I edit this code?
+A modern, full-stack event booking application built with **React, TypeScript, Vite, Tailwind CSS, shadcn-ui**, and **React Query**.
+This repository contains the **frontend** that communicates with a Node.js + Express + MySQL backend.
 
-There are several ways of editing your application.
+---
 
-**Use your preferred IDE**
+## 🚀 Features
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 👤 User Features
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+* User registration & login
+* JWT-based authentication (with context)
+* Browse all events
+* View individual event details
+* Book events (name, email, mobile, quantity)
+* Client-side search & filtering
+* Real-time seat availability
+* Responsive UI
 
-Follow these steps:
+### 🔐 Admin Features
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+* Protected Admin Dashboard (visible only to `admin = yes`)
+* Create new events
+* Edit events (with pre-filled form)
+* Delete events
+* View event statistics
+* React Query mutation-based CRUD
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 🎨 UI & Animation
 
-# Step 3: Install the necessary dependencies.
-npm i
+* Beautiful shadcn-ui components
+* Tailwind CSS styling
+* Framer Motion animations
+* Gradient & glassmorphism effects
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+---
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+
+| Technology             | Purpose                    |
+| ---------------------- | -------------------------- |
+| **React (TypeScript)** | UI Framework               |
+| **Vite**               | Development bundler        |
+| **Tailwind CSS**       | Styling                    |
+| **shadcn/ui**          | Prebuilt components        |
+| **React Router**       | Routing                    |
+| **React Query**        | Server state & API caching |
+| **axios**              | HTTP client                |
+| **Framer Motion**      | Animations                 |
+
+### **Backend**
+
+* Node.js + Express
+* MySQL + mysql2
+* JWT Authentication
+
+---
+
+## 📁 Folder Structure
+
+```
+client/
+│── public/
+│── src/
+│   ├── assets/             # Images & media
+│   ├── components/         # Reusable UI components
+│   ├── contexts/           # AuthContext (JWT handling)
+│   ├── hooks/              # React Query hooks
+│   ├── lib/                # Axios client, config
+│   ├── pages/              # Route pages (Home, Events, Admin…)
+│   ├── types/              # TypeScript interfaces
+│   ├── App.tsx             # Main routing file
+│   ├── main.tsx            # Entry point
+│── .env                    # Frontend environment variables
+│── package.json
+│── vite.config.ts
+│── README.md
+```
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file inside **client/**:
+
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+Or, if deployed:
+
+```
+VITE_API_URL=https://your-backend-domain.com/api
+```
+
+---
+
+## 📦 Installation & Setup
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone <YOUR_FRONTEND_GIT_URL>
+cd <PROJECT_NAME>
+```
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+### 3️⃣ Start the development server
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### 4️⃣ Build production bundle (optional)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🔗 API Integration
 
-## What technologies are used for this project?
+All backend requests use an axios instance located at:
 
-This project is built with:
+```
+src/lib/apiClient.ts
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Example:
+
+```ts
+apiClient.get('/events');
+apiClient.post('/auth/login', credentials);
+```
+
+React Query handles:
+
+* caching
+* invalidation
+* auto-refresh
+* success/error handling
+
+---
+
+## 🧩 Key Routes
+
+| Route         | Description                 |
+| ------------- | --------------------------- |
+| `/`           | Home Page                   |
+| `/events`     | View all events             |
+| `/events/:id` | Event details               |
+| `/login`      | User login                  |
+| `/register`   | User registration           |
+| `/admin`      | Admin dashboard (protected) |
+
+---
+
+## 🔒 Authentication Flow
+
+* User logs in → backend returns a **JWT token**.
+* Token is stored in **localStorage**.
+* `AuthContext` exposes:
+
+  ```ts
+  user, isAuthenticated, isAdmin, login(), logout()
+  ```
+* Navbar conditionally shows:
+
+  * Admin button (only admin)
+  * Login/Signup for guest
+  * Logout for authenticated users
+
+---
+
+## 🖼️ Screenshots 
+
+```
+## 📸 Screenshots
+
+### Home Page
+![Home](./public/screenshots/home1.png)
+(./public/screenshots/home2.png)
+
+### Events Page
+![Events](./public/screenshots/events.png)
+
+### Admin Dashboard
+![Admin](./public/screenshots/admin.png)
+```
+
+---
+
+
+## 🚀 Deployment
+
+### Deploy frontend on:
+
+* Vercel
+* Netlify
+
+
+## 🤝 Contribution Guidelines
+
+1. Fork the repo
+2. Create a new branch
+3. Commit changes
+4. Make a pull request
+
+---
+
+## 🐛 Troubleshooting
+
+| Issue                          | Solution                                     |
+| ------------------------------ | -------------------------------------------- |
+| `axios not found`              | Run `npm install axios` inside client folder |
+| API not working                | Check `VITE_API_URL` in `.env`               |
+| Admin page shows for all users | Verify AuthContext + admin column            |
+| MySQL datetime error           | Convert ISO → MySQL format in backend        |
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
+---
