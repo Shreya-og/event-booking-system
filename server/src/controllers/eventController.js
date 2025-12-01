@@ -1,5 +1,6 @@
 import EventModel from '../models/eventModel.js';
 import { asyncHandler } from '../middleware/errorHandler.js';
+import { toMySQLDatetime } from "../utils/date.js";
 
 // Get all events
 export const getAllEvents = asyncHandler(async (req, res) => {
@@ -46,23 +47,33 @@ export const createEvent = asyncHandler(async (req, res) => {
 });
 
 // Update event
-export const updateEvent = asyncHandler(async (req, res) => {
-    const existingEvent = await EventModel.findById(req.params.id);
+export const updateEvent = async (req, res) => {
+  const id = req.params.id;
+  const { title, description, location, date, totalSeats, price, image } = req.body;
 
-    if (!existingEvent) {
-        const error = new Error('Event not found');
-        error.status = 404;
-        error.code = 'NOT_FOUND';
-        throw error;
-    }
+  // Convert date to MySQL DATETIME format
+  const mysqlDate = toMySQLDatetime(date);
+  if (!mysqlDate) {
+    return res.status(400).json({ message: "Invalid date format" });
+  }
 
-    const event = await EventModel.update(req.params.id, req.body);
-
-    res.json({
-        data: event,
-        message: 'Event updated successfully'
+  try {
+    const updated = await EventModel.update(id, {
+      title,
+      description,
+      location,
+      date: mysqlDate,
+      total_seats: totalSeats,
+      price,
+      image,
     });
-});
+
+    return res.json({ event: updated });
+  } catch (err) {
+    console.error("Update event error", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
 
 // Delete event
 export const deleteEvent = asyncHandler(async (req, res) => {
