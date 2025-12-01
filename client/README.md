@@ -186,19 +186,17 @@ React Query handles:
 
 ## 🖼️ Screenshots 
 
-```
 ## 📸 Screenshots
 
 ### Home Page
-![Home](./public/screenshots/home1.png)
-(./public/screenshots/home2.png)
+![Home 1](./public/screenshots/home1.png)
+![Home 2](./public/screenshots/home2.png)
 
 ### Events Page
 ![Events](./public/screenshots/events.png)
 
 ### Admin Dashboard
 ![Admin](./public/screenshots/admin.png)
-```
 
 ---
 
